@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"io/ioutil"
+	"encoding/json"
 
 	"github.com/Massad/gin-boilerplate/controllers"
 	"github.com/Massad/gin-boilerplate/db"
@@ -96,17 +97,18 @@ func main() {
 		// resp, err := http.Get("https://jsonplaceholder.typicode.com/posts")
 		resp, err := http.Get("http://localhost:3002/api-risc/patient")
 		if err != nil {
-		log.Fatalln(err)
+			log.Fatalln(err)
 		}
 		//We Read the response body on the line below.
 		body, err := ioutil.ReadAll(resp.Body)
+		var pessoa, _ = json.Marshal(body)
 		if err != nil {
 			log.Fatalln(err)
 		}
 		//Convert the body to type string
 		sb := string(body)
 		log.Printf(sb)
-		fmt.Println("asasa")	
+		c.JSON(200, pessoa)
 	})
 	v1 := r.Group("/v1")
 	{

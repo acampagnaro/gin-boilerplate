@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"io/ioutil"
 
 	"github.com/Massad/gin-boilerplate/controllers"
 	"github.com/Massad/gin-boilerplate/db"
@@ -88,6 +89,25 @@ func main() {
 	//Example: db.GetRedis().Set(KEY, VALUE, at.Sub(now)).Err()
 	db.InitRedis(1)
 
+	/*** START Article ***/
+	article := new(controllers.ArticleController)
+
+	r.GET("/teste", func(c *gin.Context) {
+		// resp, err := http.Get("https://jsonplaceholder.typicode.com/posts")
+		resp, err := http.Get("http://localhost:3002/api-risc/patient")
+		if err != nil {
+		log.Fatalln(err)
+		}
+		//We Read the response body on the line below.
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		//Convert the body to type string
+		sb := string(body)
+		log.Printf(sb)
+		fmt.Println("asasa")	
+	})
 	v1 := r.Group("/v1")
 	{
 		/*** START USER ***/
@@ -102,9 +122,6 @@ func main() {
 
 		//Refresh the token when needed to generate new access_token and refresh_token for the user
 		v1.POST("/token/refresh", auth.Refresh)
-
-		/*** START Article ***/
-		article := new(controllers.ArticleController)
 
 		v1.POST("/article", TokenAuthMiddleware(), article.Create)
 		v1.GET("/articles", TokenAuthMiddleware(), article.All)
@@ -149,3 +166,4 @@ func main() {
 	}
 
 }
+
